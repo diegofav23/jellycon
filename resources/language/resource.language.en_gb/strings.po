@@ -1240,3 +1240,35 @@ msgstr "Quick Connect authentication failed. Please try again."
 msgctxt "#30682"
 msgid "Quick Connect timed out. Please try again."
 msgstr "Quick Connect timed out. Please try again."
+
+msgctxt "#30690"
+msgid "Skip"
+msgstr "Skip"
+
+msgctxt "#30691"
+msgid "Skip Intro"
+msgstr "Skip Intro"
+
+msgctxt "#30692"
+msgid "Skip Credits"
+msgstr "Skip Credits"
+
+msgctxt "#30693"
+msgid "Skip Recap"
+msgstr "Skip Recap"
+
+msgctxt "#30694"
+msgid "Skip Preview"
+msgstr "Skip Preview"
+
+msgctxt "#30695"
+msgid "Skip Commercial"
+msgstr "Skip Commercial"
+
+msgctxt "#30696"
+msgid "Next episode"
+msgstr "Next episode"
+
+msgctxt "#30697"
+msgid "Play now"
+msgstr "Play now"

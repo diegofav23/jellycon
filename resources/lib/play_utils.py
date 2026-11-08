@@ -1082,6 +1082,13 @@ def prompt_for_stop_actions(item_id, data):
     prompt_delete_episode_percentage = int(settings.getSetting('promptDeleteEpisodePercentage'))
     prompt_delete_movie_percentage = int(settings.getSetting('promptDeleteMoviePercentage'))
 
+    # the play next service already offered the next episode during playback
+    home_window = HomeWindow()
+    if item_id is not None and home_window.get_property("play_next_handled") == item_id:
+        log.debug("Next episode already handled by the play next service")
+        home_window.clear_property("play_next_handled")
+        next_episode = None
+
     # everything is off so return
     if (prompt_next_percentage == 100 and
             prompt_delete_episode_percentage == 100 and

@@ -58,14 +58,15 @@ def set_correct_skip_info(item_id: str, skip_dialog: SkipDialog, segment: dict):
         skip_dialog.media_id = item_id
         skip_dialog.has_been_dismissed_or_skipped = False
         if segment is not None:
+            segment_type = segment.get("Type")
             # Find the intro and outro timings
             start = segment.get("StartTicks")
             end = segment.get("EndTicks")
 
             # Sets timings with offsets if defined in settings
             if start is not None:
-                skip_dialog.start = start + seconds_to_ticks(get_setting_skip_start_offset(type))
-                log.debug("SkipDialogInfo : Setting {0} start to {1}".format(type, skip_dialog.start))
+                skip_dialog.start = start + seconds_to_ticks(get_setting_skip_start_offset(segment_type))
+                log.debug("SkipDialogInfo : Setting {0} start to {1}".format(segment_type, skip_dialog.start))
             if end is not None:
-                skip_dialog.end = end - seconds_to_ticks(get_setting_skip_end_offset(type))
-                log.debug("SkipDialogInfo : Setting {0} end to {1}".format(type, skip_dialog.end))
+                skip_dialog.end = end - seconds_to_ticks(get_setting_skip_end_offset(segment_type))
+                log.debug("SkipDialogInfo : Setting {0} end to {1}".format(segment_type, skip_dialog.end))

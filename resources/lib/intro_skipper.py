@@ -13,6 +13,7 @@ from resources.lib.play_utils import get_media_segments
 from resources.lib.utils import seconds_to_ticks, ticks_to_seconds, translate_path
 from resources.lib.intro_skipper_utils import get_setting_skip_action, set_correct_skip_info
 
+from .kodi_utils import HomeWindow
 from .lazylogger import LazyLogger
 from .dialogs import SkipDialog
 from .play_utils import get_playing_data
@@ -39,12 +40,15 @@ class IntroSkipperService(threading.Thread):
 
         segments = None
         playing_item_id = None
+        home_window = HomeWindow()
 
         log.debug("SkipService: starting service")
 
         while not xbmc.Monitor().abortRequested() and not self.stop_thread:
             player = xbmc.Player()
             if player.isPlaying():
+                if playing_item_id is None:
+                    settings = xbmcaddon.Addon()
                 play_data = get_playing_data()
                 item_id = play_data.get("item_id", None)
                 if item_id is not None:
@@ -61,11 +65,25 @@ class IntroSkipperService(threading.Thread):
 
                     current_ticks = seconds_to_ticks(play_data.get("current_position"))
 
-                    for segment in segments:
+                    # The play next dialog replaces the skip credits button when there is a next episode,
+                    # the button is shown only once that dialog has been closed
+                    play_next_handles_outro = (
+                        int(settings.getSetting('play_next_trigger_time')) > 0 and
+                        play_data.get("next_episode") is not None and
+                        play_data.get("item_type") == "Episode" and
+                        home_window.get_property("play_next_dismissed") != item_id)
+
+                    for segment in segments or []:
                         segment_type = segment.get("Type")
+                        if segment_type == "Outro" and play_next_handles_outro:
+                            continue
                         dialog = skip_dialog.get(segment_type, None)
                         log.debug("SkipService: dialog is: {}".format(dialog))
-                        skip_dialog[segment_type] = self.handle_dialog(plugin_path_real, dialog, item_id, current_ticks, player, segment)
+                        try:
+                            skip_dialog[segment_type] = self.handle_dialog(plugin_path_real, dialog, item_id, current_ticks, player, segment)
+                        except Exception as e:
+                            # Keep the service alive, a failing segment must not stop the other ones
+                            log.error("SkipService: error handling {0} segment : {1}".format(segment_type, e))
 
             else:
                 playing_item_id = None
@@ -84,12 +102,13 @@ class IntroSkipperService(threading.Thread):
 
         # In case do nothing is selected return
         if skip_action == "2":
-            log.debug("SkipService: ignore {0} is selected".format(type))
+            log.debug("SkipService: ignore {0} is selected".format(segment_type))
             return None
 
         if dialog is None:
             log.debug("SkipService: init dialog")
             dialog = SkipDialog("SkipDialog.xml", plugin_path_real, "default", "720p")
+            dialog.set_segment_type(segment_type)
 
         set_correct_skip_info(item_id, dialog, segment)
 
@@ -112,7 +131,7 @@ class IntroSkipperService(threading.Thread):
                 # Otherwise show skip dialog
                 if is_segment and not dialog.has_been_dismissed_or_skipped:
                     log.debug("SkipService: {0} is playing, showing dialog".format(segment_type))
-                    dialog.show()
+                    dialog.show_segment()
                 else:
                     # Could not find doc on what happens when closing a closed dialog, but it seems fine
                     log.debug("SkipService: {0} is not playing, closing dialog".format(segment_type))

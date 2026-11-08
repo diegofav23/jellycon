@@ -86,11 +86,9 @@ websocket_client = WebSocketClient(library_change_monitor)
 if remote_control:
     websocket_client.start()
 
-play_next_service = None
-play_next_trigger_time = int(settings.getSetting('play_next_trigger_time'))
-if play_next_trigger_time > 0:
-    play_next_service = PlayNextService(monitor)
-    play_next_service.start()
+# Always started, the trigger time setting is read on every playback so a change applies without restarting Kodi
+play_next_service = PlayNextService(monitor)
+play_next_service.start()
 
 # Start the context menu monitor
 context_monitor = None

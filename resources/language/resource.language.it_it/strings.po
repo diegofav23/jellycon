@@ -1240,3 +1240,35 @@ msgstr "Autenticazione Connessione rapida fallita. Riprova."
 msgctxt "#30682"
 msgid "Quick Connect timed out. Please try again."
 msgstr "Connessione rapida scaduta. Riprova."
+
+msgctxt "#30690"
+msgid "Skip"
+msgstr "Salta"
+
+msgctxt "#30691"
+msgid "Skip Intro"
+msgstr "Salta intro"
+
+msgctxt "#30692"
+msgid "Skip Credits"
+msgstr "Salta crediti"
+
+msgctxt "#30693"
+msgid "Skip Recap"
+msgstr "Salta riassunto"
+
+msgctxt "#30694"
+msgid "Skip Preview"
+msgstr "Salta anteprima"
+
+msgctxt "#30695"
+msgid "Skip Commercial"
+msgstr "Salta pubblicità"
+
+msgctxt "#30696"
+msgid "Next episode"
+msgstr "Prossimo episodio"
+
+msgctxt "#30697"
+msgid "Play now"
+msgstr "Riproduci ora"

@@ -43,7 +43,7 @@
 			<width>150</width>
 			<height>65</height>
 			<visible>true</visible>
-			<label>Play Next</label>
+			<label>Play Next$INFO[Window.Property(countdown), (,)]</label>
 			<align>center</align>
 			<texture border="1" colordiffuse="ff161616">white.png</texture>
 			<font>font12</font>

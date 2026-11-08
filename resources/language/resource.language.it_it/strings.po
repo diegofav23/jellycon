@@ -1272,3 +1272,15 @@ msgstr "Prossimo episodio"
 msgctxt "#30697"
 msgid "Play now"
 msgstr "Riproduci ora"
+
+msgctxt "#30698"
+msgid "Chapters"
+msgstr "Capitoli"
+
+msgctxt "#30699"
+msgid "No chapters"
+msgstr "Nessun capitolo"
+
+msgctxt "#30700"
+msgid "No cast"
+msgstr "Nessun attore"

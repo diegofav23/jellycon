@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Chapters and cast of the playing item from Jellyfin, replaces the skin video OSD sections -->
+<window type="dialog">
+    <defaultcontrol always="true">100</defaultcontrol>
+    <zorder>1</zorder>
+
+    <include>Animation_FadeIn</include>
+    <include>Animation_FadeOut</include>
+
+    <controls>
+        <control type="image">
+            <bottom>0</bottom>
+            <height>1080</height>
+            <texture colordiffuse="panel_bg_90" border="4,0,4,0">common/gradient-v.png</texture>
+        </control>
+
+        <!-- $ADDON[plugin.video.jellycon 30698] -->
+        <control type="group">
+            <top>170</top>
+            <left>80</left>
+            <right>80</right>
+            <height>370</height>
+
+            <control type="label">
+                <height>50</height>
+                <font>font_main_bold</font>
+                <textcolor>panel_fg_90</textcolor>
+                <label>$ADDON[plugin.video.jellycon 30698]</label>
+            </control>
+
+            <control type="label">
+                <top>60</top>
+                <height>50</height>
+                <font>font_mini</font>
+                <textcolor>panel_fg_50</textcolor>
+                <label>$ADDON[plugin.video.jellycon 30699]</label>
+                <visible>String.IsEmpty(Window.Property(has_chapters))</visible>
+            </control>
+
+            <control type="fixedlist" id="100">
+                <top>60</top>
+                <height>310</height>
+                <orientation>horizontal</orientation>
+                <focusposition>0</focusposition>
+                <movement>3</movement>
+                <scrolltime tween="cubic" easing="out">300</scrolltime>
+                <preloaditems>2</preloaditems>
+                <itemlayout width="421" height="310">
+                    <control type="group">
+                        <control type="image">
+                            <width>391</width>
+                            <height>220</height>
+                            <texture border="20" colordiffuse="panel_fg_12">common/box.png</texture>
+                        </control>
+                        <control type="image">
+                            <width>391</width>
+                            <height>220</height>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                            <texture background="true" diffuse="diffuse/landscape_w391_h220.png" fallback="special://skin/extras/icons/image.png">$INFO[ListItem.Art(thumb)]</texture>
+                        </control>
+                        <control type="image">
+                            <left>12</left>
+                            <top>168</top>
+                            <width>40</width>
+                            <height>40</height>
+                            <texture colordiffuse="$VAR[ColorHighlight]">special://skin/extras/icons/play2.png</texture>
+                            <visible>String.IsEqual(ListItem.Property(playing),true)</visible>
+                        </control>
+                        <control type="label">
+                            <top>234</top>
+                            <width>391</width>
+                            <height>34</height>
+                            <font>font_mini_bold</font>
+                            <textcolor>panel_fg_70</textcolor>
+                            <label>$INFO[ListItem.Label]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="label">
+                            <top>268</top>
+                            <width>391</width>
+                            <height>30</height>
+                            <font>font_tiny</font>
+                            <textcolor>panel_fg_50</textcolor>
+                            <label>$INFO[ListItem.Label2]</label>
+                        </control>
+                    </control>
+                </itemlayout>
+                <focusedlayout width="421" height="310">
+                    <control type="group">
+                        <control type="image">
+                            <width>391</width>
+                            <height>220</height>
+                            <texture border="20" colordiffuse="panel_fg_12">common/box.png</texture>
+                        </control>
+                        <control type="image">
+                            <width>391</width>
+                            <height>220</height>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                            <texture background="true" diffuse="diffuse/landscape_w391_h220.png" fallback="special://skin/extras/icons/image.png">$INFO[ListItem.Art(thumb)]</texture>
+                        </control>
+                        <!-- Thin focus frame of the skin, the same used by its own rows -->
+                        <control type="group">
+                            <visible>Control.HasFocus(100)</visible>
+                            <include>Animation_FocusBounce</include>
+                            <control type="image">
+                                <left>-3</left>
+                                <top>-3</top>
+                                <width>397</width>
+                                <height>226</height>
+                                <include>Texture_SelectBox_Thin</include>
+                            </control>
+                        </control>
+                        <control type="image">
+                            <left>12</left>
+                            <top>168</top>
+                            <width>40</width>
+                            <height>40</height>
+                            <texture colordiffuse="$VAR[ColorHighlight]">special://skin/extras/icons/play2.png</texture>
+                            <visible>String.IsEqual(ListItem.Property(playing),true)</visible>
+                        </control>
+                        <control type="label">
+                            <top>234</top>
+                            <width>391</width>
+                            <height>34</height>
+                            <font>font_mini_bold</font>
+                            <textcolor>panel_fg_90</textcolor>
+                            <label>$INFO[ListItem.Label]</label>
+                            <scroll>true</scroll>
+                        </control>
+                        <control type="label">
+                            <top>268</top>
+                            <width>391</width>
+                            <height>30</height>
+                            <font>font_tiny</font>
+                            <textcolor>panel_fg_50</textcolor>
+                            <label>$INFO[ListItem.Label2]</label>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+        </control>
+
+        <!-- $LOCALIZE[206] -->
+        <control type="group">
+            <top>560</top>
+            <left>80</left>
+            <right>80</right>
+            <height>450</height>
+
+            <control type="label">
+                <height>50</height>
+                <font>font_main_bold</font>
+                <textcolor>panel_fg_90</textcolor>
+                <label>$LOCALIZE[206]</label>
+            </control>
+
+            <control type="label">
+                <top>60</top>
+                <height>50</height>
+                <font>font_mini</font>
+                <textcolor>panel_fg_50</textcolor>
+                <label>$ADDON[plugin.video.jellycon 30700]</label>
+                <visible>String.IsEmpty(Window.Property(has_cast))</visible>
+            </control>
+
+            <control type="fixedlist" id="200">
+                <top>60</top>
+                <height>390</height>
+                <orientation>horizontal</orientation>
+                <focusposition>0</focusposition>
+                <movement>3</movement>
+                <scrolltime tween="cubic" easing="out">300</scrolltime>
+                <preloaditems>2</preloaditems>
+                <itemlayout width="230" height="390">
+                    <control type="group">
+                        <control type="image">
+                            <width>200</width>
+                            <height>300</height>
+                            <texture border="20" colordiffuse="panel_fg_12">common/box.png</texture>
+                        </control>
+                        <control type="image">
+                            <width>200</width>
+                            <height>300</height>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                            <texture background="true" fallback="DefaultActor.png">$INFO[ListItem.Art(thumb)]</texture>
+                        </control>
+                        <control type="label">
+                            <top>314</top>
+                            <width>200</width>
+                            <height>34</height>
+                            <font>font_mini_bold</font>
+                            <textcolor>panel_fg_70</textcolor>
+                            <label>$INFO[ListItem.Label]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="label">
+                            <top>348</top>
+                            <width>200</width>
+                            <height>30</height>
+                            <font>font_tiny</font>
+                            <textcolor>panel_fg_50</textcolor>
+                            <label>$INFO[ListItem.Label2]</label>
+                        </control>
+                    </control>
+                </itemlayout>
+                <focusedlayout width="230" height="390">
+                    <control type="group">
+                        <control type="image">
+                            <width>200</width>
+                            <height>300</height>
+                            <texture border="20" colordiffuse="panel_fg_12">common/box.png</texture>
+                        </control>
+                        <control type="image">
+                            <width>200</width>
+                            <height>300</height>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                            <texture background="true" fallback="DefaultActor.png">$INFO[ListItem.Art(thumb)]</texture>
+                        </control>
+                        <!-- Thin focus frame of the skin, the same used by its own rows -->
+                        <control type="group">
+                            <visible>Control.HasFocus(200)</visible>
+                            <include>Animation_FocusBounce</include>
+                            <control type="image">
+                                <left>-3</left>
+                                <top>-3</top>
+                                <width>206</width>
+                                <height>306</height>
+                                <include>Texture_SelectBox_Thin</include>
+                            </control>
+                        </control>
+                        <control type="label">
+                            <top>314</top>
+                            <width>200</width>
+                            <height>34</height>
+                            <font>font_mini_bold</font>
+                            <textcolor>panel_fg_90</textcolor>
+                            <label>$INFO[ListItem.Label]</label>
+                            <scroll>true</scroll>
+                        </control>
+                        <control type="label">
+                            <top>348</top>
+                            <width>200</width>
+                            <height>30</height>
+                            <font>font_tiny</font>
+                            <textcolor>panel_fg_50</textcolor>
+                            <label>$INFO[ListItem.Label2]</label>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+        </control>
+    </controls>
+</window>

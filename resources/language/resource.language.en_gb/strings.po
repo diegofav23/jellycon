@@ -1272,3 +1272,15 @@ msgstr "Next episode"
 msgctxt "#30697"
 msgid "Play now"
 msgstr "Play now"
+
+msgctxt "#30698"
+msgid "Chapters"
+msgstr "Chapters"
+
+msgctxt "#30699"
+msgid "No chapters"
+msgstr "No chapters"
+
+msgctxt "#30700"
+msgid "No cast"
+msgstr "No cast"

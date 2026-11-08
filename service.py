@@ -21,6 +21,7 @@ from resources.lib.tracking import set_timing_enabled
 from resources.lib.image_server import HttpImageServerThread
 from resources.lib.playnext import PlayNextService
 from resources.lib.intro_skipper import IntroSkipperService
+from resources.lib.osd_sections import OsdSectionsService
 
 settings = xbmcaddon.Addon()
 
@@ -100,6 +101,10 @@ if context_menu:
 # Start the skip service monitor
 intro_skipper = IntroSkipperService(monitor)
 intro_skipper.start()
+
+# Start the service replacing the chapters and cast sections of the video OSD
+osd_sections = OsdSectionsService()
+osd_sections.start()
 
 background_interval = int(settings.getSetting('background_interval'))
 newcontent_interval = int(settings.getSetting('new_content_check_interval'))
@@ -207,6 +212,9 @@ if context_monitor:
 
 if intro_skipper:
     intro_skipper.stop_service()
+
+if osd_sections:
+    osd_sections.stop_service()
 
 # clear user and token when logging off
 home_window.clear_property("user_name")

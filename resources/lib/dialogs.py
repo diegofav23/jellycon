@@ -437,3 +437,76 @@ SKIP_LABELS = {
     "Preview": 30694,
     "Commercial": 30695,
 }
+
+
+class OsdSectionsDialog(PlayerOverlayDialog):
+    """
+    Chapters and cast of the playing item, loaded from Jellyfin.
+    Replaces the chapters (video bookmarks) and cast sections of the skin video OSD.
+    """
+
+    CHAPTERS_LIST = 100
+    CAST_LIST = 200
+
+    navigation_actions = (ACTION_MOVE_LEFT, ACTION_MOVE_RIGHT, ACTION_MOVE_UP, ACTION_MOVE_DOWN, ACTION_SELECT_ITEM)
+    osd_actions = (ACTION_SHOW_OSD,)
+
+    chapters = None
+    cast = None
+    focus_section = "chapters"
+    playing_chapter = 0
+    open_osd = False
+
+    def __init__(self, *args, **kwargs):
+        log.debug("OsdSectionsDialog: __init__")
+        xbmcgui.WindowXML.__init__(self, *args, **kwargs)
+
+    def set_sections(self, chapters, cast, focus_section, playing_chapter):
+        self.chapters = chapters
+        self.cast = cast
+        self.focus_section = focus_section
+        self.playing_chapter = playing_chapter
+
+    def onInit(self):
+        log.debug("OsdSectionsDialog: onInit")
+        self.setProperty("has_chapters", "true" if self.chapters else "")
+        self.setProperty("has_cast", "true" if self.cast else "")
+
+        chapters_list = self.getControl(self.CHAPTERS_LIST)
+        chapters_list.reset()
+        chapters_list.addItems(self.chapters)
+        cast_list = self.getControl(self.CAST_LIST)
+        cast_list.reset()
+        cast_list.addItems(self.cast)
+
+        if self.chapters and (self.focus_section == "chapters" or not self.cast):
+            chapters_list.selectItem(self.playing_chapter)
+            self.setFocusId(self.CHAPTERS_LIST)
+        elif self.cast:
+            self.setFocusId(self.CAST_LIST)
+
+    def onAction(self, action):
+        action_id = action.getId()
+        focus_id = self.getFocusId()
+        if action_id in (ACTION_PREVIOUS_MENU, ACTION_NAV_BACK):
+            self.close()
+        elif action_id == ACTION_MOVE_UP and (focus_id == self.CHAPTERS_LIST or not self.chapters):
+            # Back to the OSD, like moving up from the skin chapters section
+            self.open_osd = True
+            self.close()
+        elif action_id == ACTION_MOVE_UP and focus_id == self.CAST_LIST:
+            self.setFocusId(self.CHAPTERS_LIST)
+        elif action_id == ACTION_MOVE_DOWN and focus_id == self.CHAPTERS_LIST and self.cast:
+            self.setFocusId(self.CAST_LIST)
+        elif not self.forward_player_action(action_id):
+            log.debug("OsdSectionsDialog: onAction: {0}".format(action_id))
+
+    def onClick(self, control_id):
+        if control_id != self.CHAPTERS_LIST:
+            return
+        item = self.getControl(self.CHAPTERS_LIST).getSelectedItem()
+        if item is not None:
+            start_seconds = float(item.getProperty("start_seconds") or 0)
+            log.debug("OsdSectionsDialog: seek to chapter at {0}".format(start_seconds))
+            self.close()
+            xbmc.Player().seekTime(start_seconds)

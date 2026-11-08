@@ -40,6 +40,7 @@ from .dir_functions import get_content, process_directory
 from .tracking import timer
 from .skin_cloner import clone_default_skin
 from .play_utils import play_file
+from .osd_content import get_osd_chapters, get_osd_cast, osd_seek
 
 __addon__ = xbmcaddon.Addon()
 __addondir__ = translate_path(__addon__.getAddonInfo('profile'))
@@ -132,6 +133,12 @@ def main_entry_point():
         get_widget_content(int(sys.argv[1]), params)
     elif mode == "WIDGET_CONTENT_CAST":
         get_widget_content_cast(int(sys.argv[1]), params)
+    elif mode == "OSD_CHAPTERS":
+        get_osd_chapters(int(sys.argv[1]), params)
+    elif mode == "OSD_CAST":
+        get_osd_cast(int(sys.argv[1]), params)
+    elif mode == "OSD_SEEK":
+        osd_seek(params)
     elif mode == "SHOW_CONTENT":
         check_server()
         show_content(params)

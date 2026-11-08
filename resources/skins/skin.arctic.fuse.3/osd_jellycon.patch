@@ -1,0 +1,104 @@
+JellyCon patch for Arctic Fuse 3 (made on skin version 3.4.13)
+
+Loads the chapters (with the images extracted by the Jellyfin server) and the
+cast of the playing item from JellyCon in the video OSD sections of the skin.
+Other videos keep the original skin sections.
+
+Apply (Kodi flatpak path, change it for other installs):
+    patch -p1 -d ~/.var/app/tv.kodi.Kodi/data/addons/skin.arctic.fuse.3 < osd_jellycon.patch
+
+Revert:
+    patch -R -p1 -d ~/.var/app/tv.kodi.Kodi/data/addons/skin.arctic.fuse.3 < osd_jellycon.patch
+
+A skin update overwrites the patched files, apply the patch again after it.
+
+diff -ruN a/1080i/Custom_1141_OSD_Cast.xml b/1080i/Custom_1141_OSD_Cast.xml
+--- a/1080i/Custom_1141_OSD_Cast.xml	2026-11-08 20:36:57.238418146 +0100
++++ b/1080i/Custom_1141_OSD_Cast.xml	2026-11-08 20:37:20.732827309 +0100
+@@ -47,8 +47,9 @@
+                         <param name="id">6501</param>
+                     </include>
+ 
+-                    <onclick>SetProperty(VideoOSD.InfoDialog.Path,plugin://plugin.video.themoviedb.helper/?info=details&amp;tmdb_type=person&amp;tmdb_id=$INFO[Container(9501).ListItem.Property(TMDb_ID)],Home)</onclick>
+-                    <onclick>ActivateWindow(1193)</onclick>
++                    <!-- JellyCon: there is no TMDb person info for the cast loaded from Jellyfin -->
++                    <onclick condition="!$EXP[Exp_JellyCon_Playing]">SetProperty(VideoOSD.InfoDialog.Path,plugin://plugin.video.themoviedb.helper/?info=details&amp;tmdb_type=person&amp;tmdb_id=$INFO[Container(9501).ListItem.Property(TMDb_ID)],Home)</onclick>
++                    <onclick condition="!$EXP[Exp_JellyCon_Playing]">ActivateWindow(1193)</onclick>
+                 </include>
+             </control>
+ 
+diff -ruN a/1080i/Includes_Expressions.xml b/1080i/Includes_Expressions.xml
+--- a/1080i/Includes_Expressions.xml	2026-11-08 20:36:57.234781742 +0100
++++ b/1080i/Includes_Expressions.xml	2026-11-08 20:37:20.732683682 +0100
+@@ -3,6 +3,9 @@
+ 
+     <expression name="Exp_FocusStyle_Outlined">Skin.HasSetting(OutlinedFocusedStyle)</expression>
+ 
++    <!-- JellyCon: a Jellyfin item is playing, the OSD chapters and cast are loaded from the server -->
++    <expression name="Exp_JellyCon_Playing">!String.IsEmpty(Window(Home).Property(plugin.video.jellycon-currently_playing_id))</expression>
++
+     <!-- Southern region country codes (two letters, or three on Windows).
+          Countries spanning the equator use their predominantly southern location.
+          Other or unknown regions use northern seasons. -->
+diff -ruN a/1080i/Includes_Paths.xml b/1080i/Includes_Paths.xml
+--- a/1080i/Includes_Paths.xml	2026-11-08 20:36:57.236735605 +0100
++++ b/1080i/Includes_Paths.xml	2026-11-08 20:37:20.732783135 +0100
+@@ -97,6 +97,8 @@
+     </variable>
+ 
+     <variable name="Path_OSD_Cast">
++        <value condition="$EXP[Exp_JellyCon_Playing]">plugin://plugin.video.jellycon/?mode=OSD_CAST&amp;id=$INFO[Window(Home).Property(plugin.video.jellycon-currently_playing_id)]&amp;type=$INFO[Skin.String(VideoOSD.PersonCredits.CastCrew)]</value>
++
+         <value condition="VideoPlayer.Content(movies) + !String.IsEmpty(VideoPlayer.IMDBNumber) + String.StartsWith(VideoPlayer.IMDBNumber,tt)">plugin://plugin.video.themoviedb.helper/?info=$INFO[Skin.String(VideoOSD.PersonCredits.CastCrew)]&amp;tmdb_type=movie$INFO[VideoPlayer.IMDBNumber,&amp;imdb_id=,]</value>
+ 
+         <value condition="VideoPlayer.Content(movies)">plugin://plugin.video.themoviedb.helper/?info=$INFO[Skin.String(VideoOSD.PersonCredits.CastCrew)]&amp;tmdb_type=movie$INFO[Window(Home).Property(TMDbHelper.Player.TMDb_ID),&amp;tmdb_id=,]$INFO[Player.Title,&amp;query=,]$INFO[VideoPlayer.Year,&amp;year=,]</value>
+diff -ruN a/1080i/VideoOSDBookmarks.xml b/1080i/VideoOSDBookmarks.xml
+--- a/1080i/VideoOSDBookmarks.xml	2026-11-08 20:36:57.240261677 +0100
++++ b/1080i/VideoOSDBookmarks.xml	2026-11-08 20:37:20.732861772 +0100
+@@ -3,6 +3,7 @@
+     <zorder>0</zorder>
+     <defaultcontrol always="true">2</defaultcontrol>
+     <onload>CancelAlarm(osd_timeout,true)</onload>
++    <onload condition="$EXP[Exp_JellyCon_Playing]">SetFocus(12)</onload>
+     <include>Animation_OSD_Dialog_WindowChange</include>
+     <controls>
+         <control type="group">
+@@ -30,11 +31,27 @@
+                     <param name="id">11</param>
+                     <param name="use_label2">true</param>
+                     <include>OSD_List_Dimensions</include>
++                    <visible>!$EXP[Exp_JellyCon_Playing]</visible>
+                     <onup>4000</onup>
+                     <ondown>ActivateWindow($VAR[Action_OSD_VideoBookmarks_OnDown])</ondown>
+                 </include>
++
++                <!-- JellyCon: chapters with the images extracted by the Jellyfin server -->
++                <include content="List_Landscape_Row">
++                    <param name="orientation">horizontal</param>
++                    <param name="control">fixedlist</param>
++                    <param name="id">12</param>
++                    <param name="use_label2">true</param>
++                    <include>OSD_List_Dimensions</include>
++                    <content>plugin://plugin.video.jellycon/?mode=OSD_CHAPTERS&amp;id=$INFO[Window(Home).Property(plugin.video.jellycon-currently_playing_id)]</content>
++                    <visible>$EXP[Exp_JellyCon_Playing]</visible>
++                    <onup>4000</onup>
++                    <ondown>ActivateWindow($VAR[Action_OSD_VideoBookmarks_OnDown])</ondown>
++                    <onclick>RunPlugin(plugin://plugin.video.jellycon/?mode=OSD_SEEK&amp;seconds=$INFO[ListItem.Property(start_seconds)])</onclick>
++                    <onclick>Dialog.Close(videobookmarks)</onclick>
++                </include>
+                 <control type="group">
+-                    <visible>Integer.IsEqual(Container(11).NumItems,0)</visible>
++                    <visible>[!$EXP[Exp_JellyCon_Playing] + Integer.IsEqual(Container(11).NumItems,0)] | [$EXP[Exp_JellyCon_Playing] + !Container(12).IsUpdating + Integer.IsEqual(Container(12).NumItems,0)]</visible>
+                     <include>OSD_List_Dimensions</include>
+                     <control type="group">
+                         <left>view_pad</left>
+@@ -65,7 +82,8 @@
+ 
+                     <onup>Close</onup>
+ 
+-                    <ondown>11</ondown>
++                    <ondown condition="!$EXP[Exp_JellyCon_Playing]">11</ondown>
++                    <ondown condition="$EXP[Exp_JellyCon_Playing]">12</ondown>
+ 
+                     <include content="DialogInfo_Button">
+                         <param name="vertical">false</param>

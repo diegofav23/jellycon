@@ -30,7 +30,6 @@ from .menu_functions import (
     show_movie_pages, show_artist_alpha_list
 )
 from .server_sessions import show_server_sessions
-from .action_menu import ActionMenu
 from .dialogs import BitrateDialog
 from .widgets import (
     get_widget_content, get_widget_content_cast, check_for_new_content
@@ -459,15 +458,16 @@ def show_menu(params):
             li.setProperty('menu_id', 'set_view')
             action_items.append(li)
 
-    action_menu = ActionMenu("ActionMenu.xml", PLUGINPATH, "default", "720p")
-    action_menu.setActionItems(action_items)
-    action_menu.doModal()
-    selected_action_item = action_menu.getActionItem()
+    # Use the context menu of Kodi, so it is drawn by the current skin
+    home_window.set_property("jellycon_menu_open", "true")
+    try:
+        index = xbmcgui.Dialog().contextmenu([li.getLabel() for li in action_items])
+    finally:
+        home_window.clear_property("jellycon_menu_open")
     selected_action = ""
-    if selected_action_item is not None:
-        selected_action = selected_action_item.getProperty('menu_id')
+    if index >= 0:
+        selected_action = action_items[index].getProperty('menu_id')
     log.debug("Menu Action Selected: {0}".format(selected_action))
-    del action_menu
 
     if selected_action == "play":
         log.debug("Play Item")

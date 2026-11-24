@@ -8,6 +8,7 @@ import time
 import xbmc
 
 from .functions import show_menu
+from .kodi_utils import HomeWindow
 from .lazylogger import LazyLogger
 from .widgets import check_for_new_content
 from .tracking import timer
@@ -22,6 +23,7 @@ class ContextMonitor(threading.Thread):
     def run(self):
 
         item_id = None
+        home_window = HomeWindow()
         log.debug("ContextMonitor Thread Started")
 
         while not xbmc.Monitor().abortRequested() and not self.stop_thread:
@@ -33,7 +35,9 @@ class ContextMonitor(threading.Thread):
             if xbmc.getCondVisibility(visibility_check):
                 xbmc.sleep(1000)
             else:
-                if xbmc.getCondVisibility("Window.IsVisible(contextmenu)"):
+                # The JellyCon menu is itself shown with the Kodi context menu
+                menu_open = home_window.get_property("jellycon_menu_open") == "true"
+                if xbmc.getCondVisibility("Window.IsVisible(contextmenu)") and not menu_open:
                     if item_id:
                         xbmc.executebuiltin("Dialog.Close(contextmenu,true)")
                         params = {}
